@@ -3,6 +3,8 @@ import Link from "next/link";
 import { liveCategories, liveCategoryProducts, liveProducts } from "@/lib/catalog";
 import { homeContent } from "@/lib/site-content";
 import { ProductCard } from "@/components/product-card";
+import type { Metadata } from "next";
+export const metadata: Metadata = { title: "Custom T-Shirts & Custom Apparel", description: "Create custom T-shirts, hoodies, sportswear and merchandise with your own designs or explore ready-made pieces from NAQSH.", alternates: { canonical: "/" } };
 
 export default async function Home() {
   const categories = await liveCategories();

@@ -27,8 +27,8 @@ export async function liveCategories() {
 
 export async function liveProduct(slug: string) {
   try {
-    const product = await prisma.product.findFirst({ where: { slug, isActive: true }, include: { category: true, variants: true, images: { include: { media: true }, orderBy: { position: "asc" } } } });
-    if (product) return { id: product.id, name: product.name, slug: product.slug, description: product.description, fullDescription: product.fullDescription || product.description, price: Number(product.price), category: product.category.slug, image: product.images[0]?.media.url || demoProducts[0].image, images: product.images.map((item) => item.media.url), variants: product.variants[0], isCustomizable: product.isCustomizable, isFeatured: product.isFeatured, isNew: product.isNew, tags: product.tags };
+    const product = await prisma.product.findFirst({ where: { slug, isActive: true }, include: { category: { include: { parent: true } }, variants: true, images: { include: { media: true }, orderBy: { position: "asc" } } } });
+    if (product) return { id: product.id, name: product.name, slug: product.slug, description: product.description, fullDescription: product.fullDescription || product.description, price: Number(product.price), category: product.category.slug, categoryName: product.category.name, parentCategory: product.category.parent ? { slug: product.category.parent.slug, name: product.category.parent.name } : null, image: product.images[0]?.media.url || demoProducts[0].image, images: product.images.map((item) => item.media.url), variants: product.variants[0], isCustomizable: product.isCustomizable, isFeatured: product.isFeatured, isNew: product.isNew, tags: product.tags };
   } catch { /* fallback below */ }
   const fallback = demoProducts.find((item) => item.slug === slug); return fallback ? { ...fallback, images: [fallback.image], variants: undefined } : null;
 }

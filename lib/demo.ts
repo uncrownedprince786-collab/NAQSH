@@ -31,3 +31,11 @@ export const demoProducts = catalog.flatMap(([category, names, base], categoryIn
 
 export const featuredDemoProducts = demoProducts.filter((product) => product.isFeatured).slice(0, 8);
 export const newDemoProducts = demoProducts.filter((product) => product.isNew).slice(0, 6);
+
+
+
+
+
+
+
+

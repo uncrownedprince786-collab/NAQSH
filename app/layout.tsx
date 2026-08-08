@@ -1,3 +1,7 @@
-import type { Metadata } from "next"; import "./globals.css"; import { SiteHeader } from "@/components/site-header"; import { SiteFooter } from "@/components/site-footer";
-export const metadata:Metadata={title:{default:"NAQSH | Where Ideas Take Form",template:"%s | NAQSH"},description:"Custom DTF printing and merchandise by NAQSH.",metadataBase:new URL(process.env.NEXT_PUBLIC_SITE_URL||"http://localhost:3000")};
-export default function Layout({children}:{children:React.ReactNode}){return <html lang="en"><body><SiteHeader/><main>{children}</main><SiteFooter/></body></html>}
+import type { Metadata } from "next";
+import "./globals.css";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+export const metadata: Metadata = { title: { default: "Custom T-Shirts & Custom Apparel | NAQSH", template: "%s | NAQSH" }, description: "Create custom T-shirts, hoodies, sportswear and merchandise with your own designs or explore ready-made pieces from NAQSH.", metadataBase: new URL(siteUrl), alternates: { canonical: "/" }, openGraph: { type: "website", siteName: "NAQSH", title: "Custom T-Shirts & Custom Apparel | NAQSH", description: "Custom apparel, merchandise and printing made from your ideas." }, twitter: { card: "summary_large_image", title: "Custom T-Shirts & Custom Apparel | NAQSH", description: "Custom apparel, merchandise and printing made from your ideas." } };
+export default function Layout({ children }: { children: React.ReactNode }) { const organization = { "@context": "https://schema.org", "@type": "Organization", name: "NAQSH", url: siteUrl, description: "Creative custom apparel and merchandise store.", address: { "@type": "PostalAddress", addressLocality: "Sialkot", addressCountry: "PK" } }; return <html lang="en"><body><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }}/><SiteHeader/><main>{children}</main><SiteFooter/></body></html>; }
