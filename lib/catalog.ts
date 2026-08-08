@@ -8,6 +8,13 @@ export async function liveProducts() {
   } catch { return demoProducts; }
 }
 
+export async function liveCategories() {
+  try {
+    const categories = await prisma.category.findMany({ where: { isVisible: true }, orderBy: { position: "asc" } });
+    return categories.map((category) => ({ name: category.name, slug: category.slug, description: category.description || "Explore the latest NAQSH pieces.", image: demoProducts[0].image }));
+  } catch { return []; }
+}
+
 export async function liveProduct(slug: string) {
   try {
     const product = await prisma.product.findFirst({ where: { slug, isActive: true }, include: { category: true, variants: true, images: { include: { media: true }, orderBy: { position: "asc" } } } });
