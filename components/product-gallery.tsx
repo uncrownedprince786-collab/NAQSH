@@ -1,0 +1,4 @@
+"use client";
+import Image from "next/image";
+import { useState } from "react";
+export function ProductGallery({ images, alt }: { images: string[]; alt: string }) { const [selected, setSelected] = useState(0); return <div><div className="relative aspect-[4/5] overflow-hidden bg-line"><Image src={images[selected] || images[0]} alt={alt} fill priority className="object-cover" sizes="(max-width:768px) 100vw,50vw"/></div>{images.length > 1 && <div className="mt-3 flex gap-2 overflow-x-auto">{images.map((image, index) => <button type="button" key={`${image}-${index}`} onClick={() => setSelected(index)} className={`relative h-20 w-16 shrink-0 overflow-hidden border ${index === selected ? "border-ink" : "border-line"}`} aria-label={`View image ${index + 1}`}><Image src={image} alt="" fill className="object-cover" sizes="64px"/></button>)}</div>}</div>; }

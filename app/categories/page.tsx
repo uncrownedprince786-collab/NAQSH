@@ -1,0 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
+import { liveCategories } from "@/lib/catalog";
+export const metadata = { title: "Categories" };
+export default async function Categories() { const categories = await liveCategories(); return <section className="wrap py-12"><p className="eyebrow">Browse the studio</p><h1 className="mt-2 text-4xl">Categories</h1><p className="mt-3 max-w-xl text-neutral-600">Choose a starting point for your next NAQSH piece.</p><div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{categories.map((category) => <Link href={`/category/${category.slug}`} key={category.slug} className="group relative aspect-[4/5] overflow-hidden bg-line"><Image src={category.image} alt={category.name} fill className="image-lift object-cover" sizes="(max-width:640px) 50vw,25vw"/><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-5 pb-5 pt-16 text-white"><h2 className="text-xl">{category.name}</h2><p className="mt-1 text-sm leading-5 text-white/85">{category.description}</p></div></Link>)}</div></section>; }

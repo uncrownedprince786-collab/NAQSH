@@ -1,0 +1,9 @@
+"use client";
+import { ChangeEvent, useState } from "react";
+type Image = { id: string; mediaId?: string; media?: { url: string }; url?: string };
+export function ProductImageManager({ initial = [], onChange }: { initial?: Image[]; onChange: (ids: string[]) => void }) {
+  const [images, setImages] = useState<Image[]>(initial);
+  function update(next: Image[]) { setImages(next); onChange(next.map((image) => image.mediaId || image.id)); }
+  async function upload(event: ChangeEvent<HTMLInputElement>) { for (const file of Array.from(event.target.files || [])) { const data = new FormData(); data.append("purpose", "product"); data.append("file", file); const response = await fetch("/api/upload", { method: "POST", body: data }); if (response.ok) update([...images, await response.json()]); } event.target.value = ""; }
+  return <div className="mt-4"><label className="block text-sm">Product images</label><input className="mt-2 block text-sm" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={upload}/><p className="mt-1 text-xs text-neutral-500">Upload multiple images. Their order is used on the product gallery.</p><div className="mt-3 grid grid-cols-3 gap-2">{images.map((image, index) => <div className="relative" key={image.id}><img src={image.media?.url || image.url} alt="Product" className="aspect-square w-full object-cover"/><div className="mt-1 flex justify-between text-xs"><button type="button" onClick={() => index && update(images.map((x, i) => i === index ? images[index - 1] : i === index - 1 ? images[index] : x))}>←</button><button type="button" onClick={() => index < images.length - 1 && update(images.map((x, i) => i === index ? images[index + 1] : i === index + 1 ? images[index] : x))}>→</button><button type="button" className="text-clay" onClick={() => update(images.filter((x) => x.id !== image.id))}>Remove</button></div></div>)}</div></div>;
+}

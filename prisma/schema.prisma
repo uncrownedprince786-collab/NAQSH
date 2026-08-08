@@ -42,6 +42,9 @@ model Category {
   description String?
   isVisible Boolean @default(true)
   position Int @default(0)
+  parentId String?
+  parent Category? @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryTree")
   products Product[]
   imageId String?
   image Media? @relation("CategoryImage", fields: [imageId], references: [id])
@@ -54,6 +57,7 @@ model Product {
   name String
   slug String @unique
   description String
+  fullDescription String?
   price Decimal @db.Decimal(10, 2)
   categoryId String
   category Category @relation(fields: [categoryId], references: [id])
@@ -62,6 +66,8 @@ model Product {
   collections ProductCollection[]
   isCustomizable Boolean @default(true)
   isFeatured Boolean @default(false)
+  isNew Boolean @default(false)
+  tags String[] @default([])
   isActive Boolean @default(true)
   archivedAt DateTime?
   createdAt DateTime @default(now())
