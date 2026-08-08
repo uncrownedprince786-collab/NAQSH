@@ -13,4 +13,4 @@
 
 ## External deployment
 
-- Import the completed repository in Vercel and configure production variables.
+- Vercel production deployment and smoke testing in progress.
