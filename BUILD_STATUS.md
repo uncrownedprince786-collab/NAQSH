@@ -7,8 +7,8 @@
 
 ## In progress
 
-- Neon migration and seed
-- Cloudinary upload workflow and admin data management
+- Neon migrations and seed
+- Cloudinary server-side upload workflow
 - Production build verification and GitHub push
 
 ## External deployment
