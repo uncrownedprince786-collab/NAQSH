@@ -1,0 +1,7 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { isAdmin } from "@/lib/auth";
+export async function GET(){if(!(await isAdmin()))return NextResponse.json({error:"Unauthorized"},{status:401});return NextResponse.json(await prisma.websiteSection.findMany({where:{page:"home"},orderBy:{position:"asc"}}))}
+export async function POST(request:Request){if(!(await isAdmin()))return NextResponse.json({error:"Unauthorized"},{status:401});const body=await request.json();if(!body.type)return NextResponse.json({error:"Section type is required."},{status:400});return NextResponse.json(await prisma.websiteSection.create({data:{page:"home",type:body.type,content:body.content||{},isVisible:body.isVisible!==false,position:Number(body.position||0)}}),{status:201})}
+export async function PATCH(request:Request){if(!(await isAdmin()))return NextResponse.json({error:"Unauthorized"},{status:401});const body=await request.json();if(!body.id)return NextResponse.json({error:"Section id is required."},{status:400});return NextResponse.json(await prisma.websiteSection.update({where:{id:body.id},data:{type:body.type,content:body.content,isVisible:body.isVisible,position:body.position}}))}
+export async function DELETE(request:Request){if(!(await isAdmin()))return NextResponse.json({error:"Unauthorized"},{status:401});const id=new URL(request.url).searchParams.get("id");if(!id)return NextResponse.json({error:"Section id is required."},{status:400});await prisma.websiteSection.delete({where:{id}});return new NextResponse(null,{status:204})}
