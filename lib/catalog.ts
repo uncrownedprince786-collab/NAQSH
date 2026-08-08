@@ -10,8 +10,8 @@ export async function liveProducts() {
 
 export async function liveCategories() {
   try {
-    const categories = await prisma.category.findMany({ where: { isVisible: true }, include: { image: true }, orderBy: { position: "asc" } });
-    return categories.map((category) => ({ name: category.name, slug: category.slug, description: category.description || "Explore the latest NAQSH pieces.", image: category.image?.url || demoProducts[0].image }));
+    const categories = await prisma.category.findMany({ where: { isVisible: true }, orderBy: { position: "asc" } });
+    return categories.map((category) => ({ name: category.name, slug: category.slug, description: category.description || "Explore the latest NAQSH pieces.", image: demoProducts[0].image }));
   } catch { return []; }
 }
 
