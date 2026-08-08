@@ -1,0 +1,3 @@
+"use client";
+import { useEffect, useState } from "react";
+export default function MediaAdmin() { const [items, setItems] = useState<any[]>([]); useEffect(() => { fetch("/api/admin/media").then((r) => r.json()).then(setItems); }, []); return <><p className="eyebrow">Operations</p><h1 className="mt-2 text-3xl">Media library</h1><div className="mt-8 grid gap-4 grid-cols-2 md:grid-cols-4">{items.map((item) => <div className="card overflow-hidden" key={item.id}><img src={item.url} alt={item.alt || "NAQSH media"} className="aspect-square w-full object-cover" /><div className="p-3 text-xs text-neutral-600">{item.productImages?.map((usage: any) => usage.product.name).join(", ") || "Unused"}</div></div>)}</div></>; }
