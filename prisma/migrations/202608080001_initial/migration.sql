@@ -1,0 +1,17 @@
+CREATE TYPE "InquiryStatus" AS ENUM ('NEW', 'CONTACTED', 'QUOTE_SENT', 'PAYMENT_PENDING', 'CONFIRMED', 'PRODUCTION', 'READY', 'SHIPPED', 'COMPLETED', 'CANCELLED');
+CREATE TYPE "InquiryType" AS ENUM ('PRODUCT', 'CUSTOM');
+
+CREATE TABLE "Admin" ("id" TEXT NOT NULL, "email" TEXT NOT NULL, "passwordHash" TEXT NOT NULL, "name" TEXT, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "Admin_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "Category" ("id" TEXT NOT NULL, "name" TEXT NOT NULL, "slug" TEXT NOT NULL, "description" TEXT, "isVisible" BOOLEAN NOT NULL DEFAULT true, "position" INTEGER NOT NULL DEFAULT 0, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "Category_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "Product" ("id" TEXT NOT NULL, "name" TEXT NOT NULL, "slug" TEXT NOT NULL, "description" TEXT NOT NULL, "price" DECIMAL(10,2) NOT NULL, "categoryId" TEXT NOT NULL, "isCustomizable" BOOLEAN NOT NULL DEFAULT true, "isFeatured" BOOLEAN NOT NULL DEFAULT false, "isActive" BOOLEAN NOT NULL DEFAULT true, "archivedAt" TIMESTAMP(3), "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "Product_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "Media" ("id" TEXT NOT NULL, "publicId" TEXT NOT NULL, "url" TEXT NOT NULL, "alt" TEXT, "folder" TEXT, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, CONSTRAINT "Media_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "Inquiry" ("id" TEXT NOT NULL, "reference" TEXT NOT NULL, "type" "InquiryType" NOT NULL, "status" "InquiryStatus" NOT NULL DEFAULT 'NEW', "customerName" TEXT NOT NULL, "whatsapp" TEXT NOT NULL, "productType" TEXT, "quantity" INTEGER, "size" TEXT, "color" TEXT, "printPosition" TEXT, "designDescription" TEXT, "additionalNotes" TEXT, "productId" TEXT, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "Inquiry_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "SiteSettings" ("id" TEXT NOT NULL DEFAULT 'default', "brandName" TEXT NOT NULL DEFAULT 'NAQSH', "tagline" TEXT NOT NULL DEFAULT 'Where Ideas Take Form.', "heroTitle" TEXT NOT NULL DEFAULT 'Where ideas take form.', "heroText" TEXT NOT NULL DEFAULT 'Custom printed pieces, made with care.', "heroImageUrl" TEXT, "whatsappNumber" TEXT, "productMessage" TEXT NOT NULL DEFAULT 'Hello, I am interested in this NAQSH product.', "customMessage" TEXT NOT NULL DEFAULT 'Hello, I have submitted a custom design request to NAQSH.', "phone" TEXT, "email" TEXT, "address" TEXT, "hours" TEXT, "siteTitle" TEXT NOT NULL DEFAULT 'NAQSH | Where Ideas Take Form', "metaDescription" TEXT NOT NULL DEFAULT 'Custom DTF printing and merchandise by NAQSH.', "updatedAt" TIMESTAMP(3) NOT NULL, CONSTRAINT "SiteSettings_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
+CREATE UNIQUE INDEX "Category_slug_key" ON "Category"("slug");
+CREATE UNIQUE INDEX "Product_slug_key" ON "Product"("slug");
+CREATE INDEX "Product_categoryId_isActive_idx" ON "Product"("categoryId", "isActive");
+CREATE UNIQUE INDEX "Media_publicId_key" ON "Media"("publicId");
+CREATE UNIQUE INDEX "Inquiry_reference_key" ON "Inquiry"("reference");
+CREATE INDEX "Inquiry_status_createdAt_idx" ON "Inquiry"("status", "createdAt");
+ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
