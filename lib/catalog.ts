@@ -22,3 +22,9 @@ export async function liveProduct(slug: string) {
   } catch { /* fallback below */ }
   const fallback = demoProducts.find((item) => item.slug === slug); return fallback ? { ...fallback, images: [fallback.image], variants: undefined } : null;
 }
+
+export async function liveCollection(slug: string) {
+  const collection = await prisma.collection.findFirst({ where: { slug, isVisible: true }, include: { products: { include: { product: { include: { category: true, images: { include: { media: true }, orderBy: { position: "asc" } } } } } } } });
+  if (!collection) return null;
+  return { name: collection.name, products: collection.products.map(({ product }) => ({ id: product.id, name: product.name, slug: product.slug, price: Number(product.price), image: product.images[0]?.media.url || demoProducts[0].image })) };
+}

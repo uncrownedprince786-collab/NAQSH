@@ -1,0 +1,6 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { isAdmin } from "@/lib/auth";
+
+export async function GET() { if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 }); const [brand, whatsapp, contact] = await Promise.all([prisma.brandSetting.findUnique({ where: { id: "default" } }), prisma.whatsAppSetting.findUnique({ where: { id: "default" } }), prisma.contactSetting.findUnique({ where: { id: "default" } })]); return NextResponse.json({ brand, whatsapp, contact }); }
+export async function PATCH(request: Request) { if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 }); const body = await request.json(); const section = body.section; const data = body.data || {}; if (section === "brand") return NextResponse.json(await prisma.brandSetting.upsert({ where: { id: "default" }, update: data, create: { id: "default", ...data } })); if (section === "whatsapp") return NextResponse.json(await prisma.whatsAppSetting.upsert({ where: { id: "default" }, update: data, create: { id: "default", ...data } })); if (section === "contact") return NextResponse.json(await prisma.contactSetting.upsert({ where: { id: "default" }, update: data, create: { id: "default", ...data } })); return NextResponse.json({ error: "Unknown settings section" }, { status: 400 }); }

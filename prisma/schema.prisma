@@ -170,3 +170,40 @@ model SiteSettings {
   metaDescription String @default("Custom DTF printing and merchandise by NAQSH.")
   updatedAt DateTime @updatedAt
 }
+
+model BrandSetting {
+  id String @id @default("default")
+  siteName String @default("NAQSH")
+  tagline String @default("Where Ideas Take Form.")
+  logoUrl String?
+  faviconUrl String?
+  updatedAt DateTime @updatedAt
+}
+
+model WhatsAppSetting {
+  id String @id @default("default")
+  phone String?
+  defaultMessage String @default("Hello, I would like to know more about NAQSH.")
+  productMessage String @default("Hello, I am interested in this NAQSH product.\n\nProduct: {product}\nSize: {size}\nColor: {color}\nPrint position: {position}")
+  customMessage String @default("Hello, I submitted NAQSH inquiry {reference}.")
+  updatedAt DateTime @updatedAt
+}
+
+model ContactSetting {
+  id String @id @default("default")
+  phone String?
+  email String?
+  address String?
+  hours String?
+  instagram String?
+  facebook String?
+  updatedAt DateTime @updatedAt
+}
+
+model SeoSetting {
+  id String @id @default("default")
+  page String @unique
+  title String?
+  description String?
+  updatedAt DateTime @updatedAt
+}
