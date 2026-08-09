@@ -1,157 +1,161 @@
 import { slugify } from "@/lib/utils";
 
-const pool = {
-  tees: [
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=85",
-    "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=1200&q=85",
-  ],
-  hoodies: [
-    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1200&q=85",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=85",
-  ],
-  sweatshirts: [
-    "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=1200&q=85",
-    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1200&q=85",
-  ],
-  gym: [
-    "https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=1200&q=85",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=85",
-  ],
-  bags: [
-    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1200&q=85",
-    "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=1200&q=85",
-  ],
-  gifts: [
-    "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=1200&q=85",
-    "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=1200&q=85",
-  ],
-  custom: [
-    "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1200&q=85",
-    "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=85",
-  ],
+const u = (id: string, w = 1200) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=85`;
+
+const img = {
+  tees: [u("photo-1521572163474-6864f9cf17ab"), u("photo-1503341504253-dff4815485f1"), u("photo-1513542789411-b6a5d4f31634"), u("photo-1608231387042-66d1773070a5")],
+  teesHang: [u("photo-1583743814966-8936f5b7be1a"), u("photo-1576566588028-4147f3842f27"), u("photo-1576871337632-b9aef4c17ab9")],
+  hoodies: [u("photo-1556821840-3a63f95609a7"), u("photo-1578587018452-892bacefd3f2"), u("photo-1622445275576-721325763afe")],
+  sweatshirts: [u("photo-1620799140408-edc6dcb6d633"), u("photo-1578587018452-892bacefd3f2")],
+  gym: [u("photo-1571019613454-1cb2f99b2d8b"), u("photo-1556817411-31ae72fa3ea0"), u("photo-1549060279-7e168fcee0c2"), u("photo-1558618666-fcd25c85cd64")],
+  tote: [u("photo-1544816155-12df9643f363"), u("photo-1590874103328-eac38a683ce7")],
+  caps: [u("photo-1588850561407-ed78c282e89b"), u("photo-1521369909029-2afed882baee")],
+  stickers: [u("photo-1618336753974-aae8e04506aa")],
+  mugs: [u("photo-1514228742587-6b1558fcca3d"), u("photo-1577937927133-66ef06acdf18"), u("photo-1572375992501-4b0892d50c69")],
+  posters: [u("photo-1580136579312-94651dfd596d"), "/designs/d13db9dcff33308391eeebc06670f7d8.jpg", u("photo-1519681393784-d120267933ba")],
+  gift: [u("photo-1549490349-8643362247b5"), u("photo-1607344645866-009c320b63e0"), u("photo-1549465220-1a8b9238cd48")],
+  custom: [u("photo-1494438639946-1ebd1d20bf85"), u("photo-1561070791-2526d30994b5")],
+  kids: [u("photo-1513542789411-b6a5d4f31634"), u("photo-1521572163474-6864f9cf17ab")],
 };
 
-type Seed = { cat: string; sub: string; label: string; price: number; names: string[] };
+type ProductMeta = { pool: string[]; sizes?: string[]; colors?: string[]; full: string };
+
+const typeMeta: Record<string, ProductMeta> = {
+  tees: { pool: img.tees, sizes: ["S", "M", "L", "XL"], colors: ["Black", "White", "Navy", "Sage"], full: "Printed with DTF on combed cotton and made to order in Sialkot. Pick your size and colour, then confirm the details on WhatsApp before we print." },
+  oversized: { pool: img.tees, sizes: ["S", "M", "L", "XL"], colors: ["Black", "White", "Grey", "Sage"], full: "DTF printed oversized fit in heavyweight cotton, made to order in Sialkot. Pick a size and colour, then confirm the details on WhatsApp before we print." },
+  kidsTee: { pool: img.kids, sizes: ["2-3Y", "4-5Y", "6-7Y", "8-9Y"], colors: ["Black", "White", "Red", "Navy"], full: "Kids cotton tee printed with DTF and made to order in Sialkot. Pick a size and colour, then confirm the details on WhatsApp before we print." },
+  hoodies: { pool: img.hoodies, sizes: ["S", "M", "L", "XL", "2XL"], colors: ["Black", "Oat", "Navy", "Grey"], full: "Fleece pullover printed with DTF and made to order in Sialkot. Pick a size and colour, then confirm the details on WhatsApp before we print." },
+  sweatshirts: { pool: img.sweatshirts, sizes: ["S", "M", "L", "XL", "2XL"], colors: ["Black", "Oat", "Grey"], full: "Mid-weight crew sweatshirt printed with DTF and made to order in Sialkot. Pick a size and colour, then confirm the details on WhatsApp before we print." },
+  gym: { pool: img.gym, sizes: ["S", "M", "L", "XL"], colors: ["Black", "Royal Blue", "Grey", "Neon Lime"], full: "Sweat-wicking gym piece printed with DTF and made to order in Sialkot. Pick a size and colour, then confirm the details on WhatsApp before we print." },
+  gymTop: { pool: img.gym, sizes: ["XS", "S", "M", "L"], colors: ["Black", "Grey", "Pink"], full: "Training top printed with DTF and made to order in Sialkot. Pick a size and colour, then confirm the details on WhatsApp before we print." },
+  tote: { pool: img.tote, colors: ["Natural", "Black"], full: "Heavy cotton tote printed with your artwork or logo and made to order in Sialkot. Share the design on WhatsApp and we will confirm before printing." },
+  caps: { pool: img.caps, colors: ["Black", "Khaki", "Navy"], full: "Structured cap with embroidery or printed artwork, made to order in Sialkot. Share your logo on WhatsApp and we will confirm before printing." },
+  stickers: { pool: img.stickers, full: "Vinyl sticker sheets, die-cut to your artwork and made to order in Sialkot. Share your logo or design on WhatsApp and we will confirm before printing." },
+  mugs: { pool: img.mugs, colors: ["White", "Black"], full: "Sublimation printed ceramic mug made to order in Sialkot. Share a photo, name or artwork on WhatsApp and we will confirm before printing." },
+  posters: { pool: img.posters, full: "Print on premium matte paper, made to order in Sialkot. Share your artwork or pick a NAQSH design on WhatsApp and we will confirm before printing." },
+  gift: { pool: img.gift, full: "Assembled and wrapped to order in Sialkot with your name, photo or message. Share the details on WhatsApp and we will confirm before sending." },
+  custom: { pool: img.custom, sizes: ["S", "M", "L", "XL"], colors: ["Black", "White", "Navy"], full: "Made to order in Sialkot from your idea. Share the artwork, quantity and dates on WhatsApp and we will confirm before printing." },
+};
+
+type Seed = {
+  cat: string;
+  sub: string;
+  label: string;
+  type: string;
+  price: number;
+  tags: string[];
+  names: string[];
+  blurbs: string[];
+  featured?: number[];
+  new?: number[];
+};
 
 const seeds: Seed[] = [
   // Men
-  { cat: "men", sub: "men-t-shirts", label: "Men's T-Shirts", price: 2350, names: ["Everyday Men's T-Shirt", "Men's Essential T-Shirt", "Men's Graphic T-Shirt"] },
-  { cat: "men", sub: "men-oversized-t-shirts", label: "Men's Oversized T-Shirts", price: 2850, names: ["Men's Oversized T-Shirt", "Men's Street Oversized T-Shirt"] },
-  { cat: "men", sub: "men-hoodies", label: "Men's Hoodies", price: 4350, names: ["Men's Hoodie", "Men's Essential Hoodie"] },
-  { cat: "men", sub: "men-sweatshirts", label: "Men's Sweatshirts", price: 3350, names: ["Men's Sweatshirt", "Men's Crew Sweatshirt"] },
-  { cat: "men", sub: "men-gym-wear", label: "Men's Gym Wear", price: 2750, names: ["Men's Gym T-Shirt", "Men's Training T-Shirt", "Men's Gym Hoodie"] },
-  { cat: "men", sub: "men-custom-clothing", label: "Men's Custom Clothing", price: 3200, names: ["Men's Custom Clothing", "Custom Men's Set"] },
+  { cat: "men", sub: "men-t-shirts", label: "Men's T-Shirts", type: "tees", price: 2350, tags: ["Men", "T-Shirt", "Custom print"], names: ["Men's Essential Cotton T-Shirt", "Custom Printed Men's T-Shirt", "Men's Graphic T-Shirt"], featured: [0], blurbs: ["Combed cotton men's tee, printed to order with your own artwork, text or logo.", "A straight-fitting men's t-shirt in high-GSM cotton that keeps its shape.", "Men's tee made for daily wear, ready for a single print or a full run."] },
+  { cat: "men", sub: "men-oversized-t-shirts", label: "Men's Oversized T-Shirts", type: "oversized", price: 2850, tags: ["Men", "Oversized T-Shirt", "Streetwear", "Custom print"], names: ["Men's Oversized T-Shirt", "Oversized Street T-Shirt", "Men's Drop Shoulder T-Shirt"], new: [0], blurbs: ["Drop-shoulder men's tee with a relaxed, boxy fit.", "Men's oversized t-shirt, printed to order in your colour and size.", "A loose street fit in heavyweight cotton, made for big artwork prints."] },
+  { cat: "men", sub: "men-hoodies", label: "Men's Hoodies", type: "hoodies", price: 4350, tags: ["Men", "Hoodie", "Custom print"], names: ["Custom Printed Men's Hoodie", "Men's Pullover Hoodie", "Men's Heavy Fleece Hoodie"], featured: [1], blurbs: ["Men's pullover hoodie in brushed fleece, ready for your print.", "A warm, heavy men's hoodie printed with DTF to order.", "Classic men's hoodie with a roomy hood and front pocket."] },
+  { cat: "men", sub: "men-sweatshirts", label: "Men's Sweatshirts", type: "sweatshirts", price: 3350, tags: ["Men", "Sweatshirt", "Custom print"], names: ["Men's Crew Sweatshirt", "Custom Printed Men's Sweatshirt"], blurbs: ["Men's crew sweatshirt in soft mid-weight fleece.", "Men's sweatshirt printed to order with your design."] },
+  { cat: "men", sub: "men-gym-wear", label: "Men's Gym Wear", type: "gym", price: 2750, tags: ["Men", "Gym Wear", "Custom print"], names: ["Men's Gym T-Shirt", "Men's Training Tee", "Men's Gym Hoodie"], blurbs: ["Men's gym tee that wicks sweat, printed with your club or gym name.", "Training tee with a relaxed cut, made for the gym floor.", "A men's gym hoodie printed for your squad or personal training brand."] },
+  { cat: "men", sub: "men-custom-clothing", label: "Men's Custom Clothing", type: "custom", price: 3200, tags: ["Men", "Custom Design", "Made to order"], names: ["Men's Custom Set", "Made to Order Men's Wear"], blurbs: ["A men's piece made fully to your idea — artwork, fit and colour are up to you.", "Start from your own reference and we will print it for you."] },
   // Women
-  { cat: "women", sub: "women-t-shirts", label: "Women's T-Shirts", price: 2350, names: ["Women's T-Shirt", "Women's Graphic T-Shirt"] },
-  { cat: "women", sub: "women-oversized-t-shirts", label: "Women's Oversized T-Shirts", price: 2850, names: ["Women's Oversized T-Shirt", "Women's Street T-Shirt"] },
-  { cat: "women", sub: "women-hoodies", label: "Women's Hoodies", price: 4350, names: ["Women's Hoodie", "Women's Essential Hoodie"] },
-  { cat: "women", sub: "women-sweatshirts", label: "Women's Sweatshirts", price: 3350, names: ["Women's Sweatshirt", "Women's Crew Sweatshirt"] },
-  { cat: "women", sub: "women-gym-wear", label: "Women's Gym Wear", price: 2850, names: ["Women's Gym Wear", "Women's Training Top", "Women's Gym Hoodie"] },
-  { cat: "women", sub: "women-custom-clothing", label: "Women's Custom Clothing", price: 3200, names: ["Women's Custom Clothing"] },
+  { cat: "women", sub: "women-t-shirts", label: "Women's T-Shirts", type: "tees", price: 2350, tags: ["Women", "T-Shirt", "Custom print"], names: ["Women's Relaxed T-Shirt", "Women's Custom Printed T-Shirt", "Women's Graphic T-Shirt"], featured: [1], blurbs: ["Women's tee in a relaxed fit, printed with your design.", "A soft cotton women's t-shirt made to order with your artwork or text.", "Women's graphic tee, printed fresh for you in Sialkot."] },
+  { cat: "women", sub: "women-oversized-t-shirts", label: "Women's Oversized T-Shirts", type: "oversized", price: 2850, tags: ["Women", "Oversized T-Shirt", "Streetwear", "Custom print"], names: ["Women's Oversized T-Shirt", "Women's Oversized Street T-Shirt"], new: [0], blurbs: ["Women's oversized tee with a dropped shoulder and easy fit.", "An oversized street cut, printed with your own artwork."] },
+  { cat: "women", sub: "women-hoodies", label: "Women's Hoodies", type: "hoodies", price: 4350, tags: ["Women", "Hoodie", "Custom print"], names: ["Women's Pullover Hoodie", "Women's Cropped Hoodie", "Women's Oversized Hoodie"], blurbs: ["Women's pullover hoodie in soft fleece, printed to order.", "A cropped women's hoodie that sits just at the waist.", "Oversized women's hoodie, cosy and ready for your print."] },
+  { cat: "women", sub: "women-sweatshirts", label: "Women's Sweatshirts", type: "sweatshirts", price: 3350, tags: ["Women", "Sweatshirt", "Custom print"], names: ["Women's Crew Sweatshirt", "Women's Oversized Sweatshirt"], blurbs: ["Women's crew sweatshirt in a relaxed, everyday fit.", "Women's sweatshirt printed to order with your design."] },
+  { cat: "women", sub: "women-gym-wear", label: "Women's Gym Wear", type: "gym", price: 2850, tags: ["Women", "Gym Wear", "Custom print"], names: ["Women's Gym T-Shirt", "Women's Racerback T-Shirt", "Women's Gym Hoodie"], blurbs: ["Women's gym tee in sweat-wicking fabric, printed for your training group.", "A racerback cut that stays put through a session.", "Women's gym hoodie, made to order for your class or club."] },
+  { cat: "women", sub: "women-custom-clothing", label: "Women's Custom Clothing", type: "custom", price: 3200, tags: ["Women", "Custom Design", "Made to order"], names: ["Women's Custom Set", "Made to Order Women's Wear"], blurbs: ["A women's piece made from your own idea — share the reference and we will print it.", "Fully made to order, from fit and colour to artwork."] },
   // Kids
-  { cat: "kids", sub: "kids-t-shirts", label: "Kids T-Shirts", price: 1650, names: ["Kids Graphic T-Shirt", "Kids Essential T-Shirt"] },
-  { cat: "kids", sub: "kids-oversized-t-shirts", label: "Kids Oversized T-Shirts", price: 1950, names: ["Kids Oversized T-Shirt", "Kids Street T-Shirt"] },
-  { cat: "kids", sub: "kids-hoodies", label: "Kids Hoodies", price: 3250, names: ["Kids Hoodie", "Kids Club Hoodie"] },
-  { cat: "kids", sub: "kids-sweatshirts", label: "Kids Sweatshirts", price: 2650, names: ["Kids Sweatshirt", "Kids Studio Sweatshirt"] },
-  { cat: "kids", sub: "kids-custom-clothing", label: "Kids Custom Clothing", price: 2150, names: ["Kids Custom Clothing"] },
+  { cat: "kids", sub: "kids-t-shirts", label: "Kids T-Shirts", type: "kidsTee", price: 1650, tags: ["Kids", "T-Shirt", "Custom print"], names: ["Kids Custom T-Shirt", "Kids Graphic T-Shirt", "Kids Birthday T-Shirt"], featured: [0], blurbs: ["Kids tee in soft cotton, printed with a name, character or idea.", "A comfy kids t-shirt made for play and wash after wash.", "Birthday tee printed with the age, name or date of your choice."] },
+  { cat: "kids", sub: "kids-oversized-t-shirts", label: "Kids Oversized T-Shirts", type: "kidsTee", price: 1950, tags: ["Kids", "Oversized T-Shirt", "Custom print"], names: ["Kids Oversized T-Shirt", "Kids Street Print T-Shirt"], blurbs: ["A roomy kids tee with a street-style print.", "Kids oversized t-shirt printed with your child's favourite design."] },
+  { cat: "kids", sub: "kids-hoodies", label: "Kids Hoodies", type: "hoodies", price: 3250, tags: ["Kids", "Hoodie", "Custom print"], names: ["Kids Pullover Hoodie", "Kids Printed Hoodie"], blurbs: ["Kids pullover hoodie in soft fleece, printed to order.", "A warm kids hoodie with their name or a favourite character."] },
+  { cat: "kids", sub: "kids-sweatshirts", label: "Kids Sweatshirts", type: "sweatshirts", price: 2650, tags: ["Kids", "Sweatshirt", "Custom print"], names: ["Kids Crew Sweatshirt"], blurbs: ["Kids crew sweatshirt in soft mid-weight fleece, ready for a print."] },
+  { cat: "kids", sub: "kids-custom-clothing", label: "Kids Custom Clothing", type: "kidsTee", price: 2150, tags: ["Kids", "Custom Design", "Made to order"], names: ["Kids Custom Set", "Custom Kids Clothing"], blurbs: ["A kids piece made from your idea, name or drawing.", "Made to order in your child's size, colour and print."] },
   // T-Shirts
-  { cat: "t-shirts", sub: "everyday-t-shirts", label: "Everyday T-Shirts", price: 2100, names: ["Everyday Graphic T-Shirt", "Essential White T-Shirt", "Weekend Pocket T-Shirt"] },
-  { cat: "t-shirts", sub: "oversized-t-shirts", label: "Oversized T-Shirts", price: 2450, names: ["Oversized Graphic T-Shirt", "Raw Hem Oversized T-Shirt", "Street Oversized T-Shirt"] },
-  { cat: "t-shirts", sub: "graphic-t-shirts", label: "Graphic T-Shirts", price: 2250, names: ["Graphic T-Shirt", "Line Art T-Shirt", "Bold Print T-Shirt"] },
-  { cat: "t-shirts", sub: "anime-t-shirts", label: "Anime T-Shirts", price: 2450, names: ["Anime Graphic T-Shirt", "Anime Line T-Shirt", "Manga Type T-Shirt"] },
-  { cat: "t-shirts", sub: "superhero-t-shirts", label: "Superhero T-Shirts", price: 2450, names: ["Superhero Graphic T-Shirt", "Comic Hero T-Shirt", "Hero Print T-Shirt"] },
-  { cat: "t-shirts", sub: "pakistani-culture-t-shirts", label: "Pakistani Culture T-Shirts", price: 2550, names: ["Pakistani Culture T-Shirt", "Sialkot City T-Shirt", "Heritage Print T-Shirt"] },
-  { cat: "t-shirts", sub: "typography-t-shirts", label: "Typography T-Shirts", price: 2250, names: ["Typography T-Shirt", "Type Statement T-Shirt", "Wordmark T-Shirt"] },
-  { cat: "t-shirts", sub: "darwaish-t-shirts", label: "Darwaish Designs", price: 2650, names: ["Darwaish T-Shirt", "Darwaish Line T-Shirt", "Darwaish Graphic T-Shirt"] },
-  { cat: "t-shirts", sub: "minimal-t-shirts", label: "Minimal Designs", price: 2150, names: ["Minimal Type T-Shirt", "Minimal Logo T-Shirt", "Mono Minimal T-Shirt"] },
-  { cat: "t-shirts", sub: "custom-printed-t-shirts", label: "Custom Printed T-Shirts", price: 2900, names: ["Custom Printed T-Shirt", "Your Design T-Shirt", "Personalised T-Shirt"] },
+  { cat: "t-shirts", sub: "everyday-t-shirts", label: "Everyday T-Shirts", type: "tees", price: 2100, tags: ["T-Shirt", "Minimal", "Custom print"], names: ["Everyday Cotton T-Shirt", "Essential Crew T-Shirt", "Plain Print-Ready T-Shirt"], blurbs: ["A plain cotton tee in a true-to-size fit, ready for any print.", "Everyday crew that holds its shape and stays soft.", "Blank t-shirt you can personalise with text, a logo or a photo."] },
+  { cat: "t-shirts", sub: "oversized-t-shirts", label: "Oversized T-Shirts", type: "oversized", price: 2450, tags: ["T-Shirt", "Oversized", "Streetwear", "Custom print"], names: ["Oversized Graphic T-Shirt", "Raw Hem Oversized T-Shirt", "Street Oversized T-Shirt"], featured: [0], blurbs: ["Oversized graphic tee with a relaxed, boxy body.", "Raw hem tee in a loose street cut, printed to order.", "An oversized fit that suits big prints and bold colours."] },
+  { cat: "t-shirts", sub: "graphic-t-shirts", label: "Graphic T-Shirts", type: "tees", price: 2250, tags: ["T-Shirt", "Graphic", "Streetwear", "Abstract", "Custom print"], names: ["Graphic Print T-Shirt", "Line Art T-Shirt", "Bold Print T-Shirt"], new: [1], blurbs: ["A t-shirt built around a strong graphic print.", "Line art tee with a clean, single-colour artwork.", "Bold print t-shirt for when the design should do the talking."] },
+  { cat: "t-shirts", sub: "anime-t-shirts", label: "Anime T-Shirts", type: "tees", price: 2450, tags: ["T-Shirt", "Anime", "Custom print"], names: ["Anime Graphic T-Shirt", "Anime Line Art T-Shirt", "Manga Print T-Shirt"], blurbs: ["Anime-style graphic tee, printed from your favourite frame or fan art.", "A clean line-art anime print in one or two colours.", "Manga print t-shirt made to order — send us the panel you want."] },
+  { cat: "t-shirts", sub: "superhero-t-shirts", label: "Superhero T-Shirts", type: "tees", price: 2450, tags: ["T-Shirt", "Superheroes", "Superhero", "Custom print"], names: ["Superhero Graphic T-Shirt", "Comic Hero T-Shirt", "Hero Print T-Shirt"], blurbs: ["Superhero graphic tee printed from your reference artwork.", "Comic hero t-shirt with bold, comic-book colours.", "A hero print tee for a kid's room or a grown-up's wardrobe."] },
+  { cat: "t-shirts", sub: "pakistani-culture-t-shirts", label: "Pakistani Culture T-Shirts", type: "tees", price: 2550, tags: ["T-Shirt", "Pakistani Culture", "Custom print"], names: ["Pakistani Culture T-Shirt", "Truck Art T-Shirt", "Sialkot Pride T-Shirt"], new: [1], blurbs: ["A t-shirt printed with patterns inspired by Pakistani truck art.", "Culture-themed tee, printed to order in Sialkot.", "Show your city with a Sialkot-themed print on a quality cotton tee."] },
+  { cat: "t-shirts", sub: "typography-t-shirts", label: "Typography T-Shirts", type: "tees", price: 2250, tags: ["T-Shirt", "Typography", "Custom print"], names: ["Typography T-Shirt", "Statement Type T-Shirt", "Wordmark T-Shirt"], blurbs: ["A tee built around type — your phrase, name or slogan.", "Statement typography print in a clean layout.", "Wordmark t-shirt with your text arranged as the artwork."] },
+  { cat: "t-shirts", sub: "darwaish-t-shirts", label: "Darwaish Designs", type: "tees", price: 2650, tags: ["T-Shirt", "Darwaish", "Custom print"], names: ["Darwaish T-Shirt", "Darwaish Line T-Shirt", "Darwaish Print T-Shirt"], blurbs: ["Darwaish artwork printed onto a quality cotton tee.", "A clean Darwaish line print in one or two colours.", "Darwaish graphic t-shirt, made to order in Sialkot."] },
+  { cat: "t-shirts", sub: "minimal-t-shirts", label: "Minimal Designs", type: "tees", price: 2150, tags: ["T-Shirt", "Minimal", "Custom print"], names: ["Minimal T-Shirt", "Mono Logo T-Shirt", "Tiny Mark T-Shirt"], blurbs: ["A quiet, minimal tee with a small print.", "Mono logo t-shirt in one colour on solid cotton.", "Tiny mark tee for logos and monograms that stay subtle."] },
+  { cat: "t-shirts", sub: "custom-printed-t-shirts", label: "Custom Printed T-Shirts", type: "tees", price: 2900, tags: ["T-Shirt", "Custom Design", "Personalised", "Custom print"], names: ["Custom Printed T-Shirt", "Your Design T-Shirt", "Personalised T-Shirt", "Photo Print T-Shirt"], featured: [0], new: [3], blurbs: ["Your own artwork, printed onto a quality cotton tee.", "Send any design — a logo, sketch or photo — and we will print it.", "Personalised t-shirt with a name, date or message.", "Photo print t-shirt made from a picture you share with us."] },
   // Hoodies
-  { cat: "hoodies", sub: "everyday-hoodies", label: "Everyday Hoodies", price: 4350, names: ["NAQSH Essential Hoodie", "Essential Pullover Hoodie", "Weekend Hoodie"] },
-  { cat: "hoodies", sub: "graphic-hoodies", label: "Graphic Hoodies", price: 4650, names: ["Graphic Pullover Hoodie", "Abstract Print Hoodie", "Bold Graphic Hoodie"] },
-  { cat: "hoodies", sub: "anime-hoodies", label: "Anime Hoodies", price: 4950, names: ["Anime Hoodie", "Anime Graphic Hoodie", "Manga Hoodie"] },
-  { cat: "hoodies", sub: "superhero-hoodies", label: "Superhero Hoodies", price: 4950, names: ["Superhero Hoodie", "Comic Hero Hoodie"] },
-  { cat: "hoodies", sub: "streetwear-hoodies", label: "Streetwear Hoodies", price: 4850, names: ["Streetwear Hoodie", "Oversized Street Hoodie", "Varsity Hoodie"] },
-  { cat: "hoodies", sub: "pakistani-culture-hoodies", label: "Pakistani Culture Hoodies", price: 5450, names: ["Pakistani Culture Hoodie", "Sialkot Night Hoodie", "Heritage Hoodie"] },
-  { cat: "hoodies", sub: "darwaish-hoodies", label: "Darwaish Designs", price: 5450, names: ["Darwaish Hoodie", "Darwaish Line Hoodie"] },
-  { cat: "hoodies", sub: "minimal-hoodies", label: "Minimal Hoodies", price: 4350, names: ["Minimal Hoodie", "Essential Mono Hoodie"] },
-  { cat: "hoodies", sub: "custom-printed-hoodies", label: "Custom Printed Hoodies", price: 5150, names: ["Custom Printed Hoodie", "Your Design Hoodie"] },
+  { cat: "hoodies", sub: "everyday-hoodies", label: "Everyday Hoodies", type: "hoodies", price: 4350, tags: ["Hoodie", "Custom print"], names: ["Essential Pullover Hoodie", "Everyday Fleece Hoodie", "Weekend Hoodie"], featured: [0], blurbs: ["An essential pullover hoodie in brushed fleece.", "Everyday hoodie that gets softer with each wash.", "Weekend hoodie, roomy and ready for your print."] },
+  { cat: "hoodies", sub: "graphic-hoodies", label: "Graphic Hoodies", type: "hoodies", price: 4650, tags: ["Hoodie", "Graphic", "Streetwear", "Abstract", "Custom print"], names: ["Graphic Print Hoodie", "Abstract Print Hoodie", "Bold Graphic Hoodie"], blurbs: ["Hoodie printed with a strong graphic across the chest or back.", "Abstract print hoodie in layered colours.", "Bold graphic hoodie, made for big statement artwork."] },
+  { cat: "hoodies", sub: "anime-hoodies", label: "Anime Hoodies", type: "hoodies", price: 4950, tags: ["Hoodie", "Anime", "Custom print"], names: ["Anime Hoodie", "Anime Graphic Hoodie", "Manga Hoodie"], blurbs: ["Anime hoodie printed from your favourite artwork.", "A graphic anime hoodie in full colour.", "Manga hoodie, printed to order from the frames you pick."] },
+  { cat: "hoodies", sub: "superhero-hoodies", label: "Superhero Hoodies", type: "hoodies", price: 4950, tags: ["Hoodie", "Superheroes", "Superhero", "Custom print"], names: ["Superhero Hoodie", "Comic Hero Hoodie"], blurbs: ["Superhero hoodie printed in bold comic colours.", "Comic hero hoodie, made from your reference artwork."] },
+  { cat: "hoodies", sub: "streetwear-hoodies", label: "Streetwear Hoodies", type: "hoodies", price: 4850, tags: ["Hoodie", "Streetwear", "Custom print"], names: ["Streetwear Hoodie", "Oversized Street Hoodie", "Varsity Hoodie"], blurbs: ["A streetwear cut hoodie in heavyweight fleece.", "Oversized street hoodie with dropped shoulders.", "Varsity-style hoodie with your club or crew name printed."] },
+  { cat: "hoodies", sub: "pakistani-culture-hoodies", label: "Pakistani Culture Hoodies", type: "hoodies", price: 5450, tags: ["Hoodie", "Pakistani Culture", "Custom print"], names: ["Pakistani Culture Hoodie", "Truck Art Hoodie", "Sialkot Hoodie"], blurbs: ["Hoodie printed with Pakistani truck art patterns.", "Culture-inspired hoodie, printed to order in Sialkot.", "Sialkot hoodie for anyone proud of the city."] },
+  { cat: "hoodies", sub: "darwaish-hoodies", label: "Darwaish Designs", type: "hoodies", price: 5450, tags: ["Hoodie", "Darwaish", "Custom print"], names: ["Darwaish Hoodie", "Darwaish Print Hoodie"], blurbs: ["Darwaish artwork on a heavyweight fleece hoodie.", "Darwaish print hoodie, made to order in Sialkot."] },
+  { cat: "hoodies", sub: "minimal-hoodies", label: "Minimal Hoodies", type: "hoodies", price: 4350, tags: ["Hoodie", "Minimal", "Custom print"], names: ["Minimal Hoodie", "Essential Mono Hoodie"], blurbs: ["A minimal hoodie with a small, quiet print.", "Essential mono hoodie in one colour, printed to order."] },
+  { cat: "hoodies", sub: "custom-printed-hoodies", label: "Custom Printed Hoodies", type: "hoodies", price: 5150, tags: ["Hoodie", "Custom Design", "Custom print"], names: ["Custom Printed Hoodie", "Your Design Hoodie"], blurbs: ["Your artwork on a warm fleece hoodie, printed to order.", "Send any design and we will print it on a quality hoodie."] },
   // Sweatshirts
-  { cat: "sweatshirts", sub: "everyday-sweatshirts", label: "Everyday Sweatshirts", price: 3350, names: ["Everyday Sweatshirt", "Core Sweatshirt", "Studio Sweatshirt"] },
-  { cat: "sweatshirts", sub: "graphic-sweatshirts", label: "Graphic Sweatshirts", price: 3550, names: ["Graphic Sweatshirt", "Print Crew Sweatshirt"] },
-  { cat: "sweatshirts", sub: "minimal-sweatshirts", label: "Minimal Sweatshirts", price: 3250, names: ["Minimal Sweatshirt", "Mono Crew"] },
-  { cat: "sweatshirts", sub: "typography-sweatshirts", label: "Typography Sweatshirts", price: 3350, names: ["Typography Sweatshirt", "Type Crew"] },
-  { cat: "sweatshirts", sub: "pakistani-culture-sweatshirts", label: "Pakistani Culture Sweatshirts", price: 3650, names: ["Pakistani Culture Sweatshirt", "Heritage Crew"] },
-  { cat: "sweatshirts", sub: "custom-sweatshirts", label: "Custom Sweatshirts", price: 3750, names: ["Custom Sweatshirt", "Your Design Sweatshirt"] },
+  { cat: "sweatshirts", sub: "everyday-sweatshirts", label: "Everyday Sweatshirts", type: "sweatshirts", price: 3350, tags: ["Sweatshirt", "Custom print"], names: ["Everyday Crew Sweatshirt", "Core Sweatshirt", "Studio Sweatshirt"], blurbs: ["An everyday crew in soft mid-weight fleece.", "Core sweatshirt, plain and ready for a print.", "Studio sweatshirt with a clean, relaxed fit."] },
+  { cat: "sweatshirts", sub: "graphic-sweatshirts", label: "Graphic Sweatshirts", type: "sweatshirts", price: 3550, tags: ["Sweatshirt", "Graphic", "Streetwear", "Abstract", "Custom print"], names: ["Graphic Sweatshirt", "Print Crew Sweatshirt"], blurbs: ["Crew sweatshirt printed with a graphic design.", "Print crew sweatshirt in a relaxed everyday fit."] },
+  { cat: "sweatshirts", sub: "minimal-sweatshirts", label: "Minimal Sweatshirts", type: "sweatshirts", price: 3250, tags: ["Sweatshirt", "Minimal", "Custom print"], names: ["Minimal Sweatshirt", "Mono Crew"], blurbs: ["A minimal sweatshirt with a small print near the chest.", "Mono crew in a single colour, printed to order."] },
+  { cat: "sweatshirts", sub: "typography-sweatshirts", label: "Typography Sweatshirts", type: "sweatshirts", price: 3350, tags: ["Sweatshirt", "Typography", "Custom print"], names: ["Typography Sweatshirt", "Type Crew"], blurbs: ["A crew built around a typography print.", "Type crew sweatshirt with your words as the artwork."] },
+  { cat: "sweatshirts", sub: "pakistani-culture-sweatshirts", label: "Pakistani Culture Sweatshirts", type: "sweatshirts", price: 3650, tags: ["Sweatshirt", "Pakistani Culture", "Custom print"], names: ["Pakistani Culture Sweatshirt", "Truck Art Crew"], blurbs: ["Sweatshirt printed with Pakistani truck art patterns.", "Truck art crew, made to order in Sialkot."] },
+  { cat: "sweatshirts", sub: "custom-sweatshirts", label: "Custom Sweatshirts", type: "sweatshirts", price: 3750, tags: ["Sweatshirt", "Custom Design", "Custom print"], names: ["Custom Sweatshirt", "Your Design Sweatshirt"], blurbs: ["Your design printed on a soft crew sweatshirt.", "Made to order from your artwork, text or logo."] },
   // Gym Wear
-  { cat: "gym-wear", sub: "gym-t-shirts", label: "Gym T-Shirts", price: 2750, names: ["Strength Club T-Shirt", "Gym T-Shirt", "Performance T-Shirt"] },
-  { cat: "gym-wear", sub: "training-t-shirts", label: "Training T-Shirts", price: 2850, names: ["Training T-Shirt", "Training Tee", "Session T-Shirt"] },
-  { cat: "gym-wear", sub: "gym-hoodies", label: "Gym Hoodies", price: 5150, names: ["Gym Hoodie", "Training Hoodie"] },
-  { cat: "gym-wear", sub: "training-tops", label: "Training Tops", price: 2950, names: ["Performance Top", "Training Top", "Racerback Top"] },
-  { cat: "gym-wear", sub: "mens-gym-wear", label: "Men's Gym Wear", price: 2750, names: ["Men's Gym T-Shirt", "Men's Training T-Shirt"] },
-  { cat: "gym-wear", sub: "womens-gym-wear", label: "Women's Gym Wear", price: 2850, names: ["Women's Training Top", "Women's Gym T-Shirt"] },
-  { cat: "gym-wear", sub: "custom-gym-wear", label: "Custom Gym Wear", price: 3150, names: ["Custom Gym Wear", "Your Design Gym Tee"] },
+  { cat: "gym-wear", sub: "gym-t-shirts", label: "Gym T-Shirts", type: "gym", price: 2750, tags: ["Gym Wear", "Strength Club", "T-Shirt", "Custom print"], names: ["Strength Club Print T-Shirt", "Gym Print T-Shirt", "Training Crew T-Shirt"], featured: [0], blurbs: ["Gym tee printed with your club, team or gym name.", "A sweat-wicking tee made for the gym floor.", "Training crew t-shirt, printed to order in Sialkot."] },
+  { cat: "gym-wear", sub: "training-t-shirts", label: "Training T-Shirts", type: "gym", price: 2850, tags: ["Gym Wear", "Strength Club", "Typography", "Custom print"], names: ["Training T-Shirt", "Session T-Shirt", "Performance Tee"], blurbs: ["Training tee with a typography print you choose.", "Session t-shirt for your regular training group.", "Performance tee in breathable, quick-dry fabric."] },
+  { cat: "gym-wear", sub: "gym-hoodies", label: "Gym Hoodies", type: "hoodies", price: 5150, tags: ["Gym Wear", "Hoodie", "Custom print"], names: ["Pullover Gym Hoodie", "Training Hoodie"], blurbs: ["A gym hoodie printed for your crew or club.", "Training hoodie in fleece, roomy over gym kit."] },
+  { cat: "gym-wear", sub: "training-tops", label: "Training Tops", type: "gymTop", price: 2950, tags: ["Gym Wear", "Strength Club", "Custom print"], names: ["Performance Training Top", "Racerback Top", "Strength Club Racerback"], blurbs: ["A performance training top in quick-dry fabric.", "Racerback top for free movement through a session.", "Strength club racerback, printed with your team name."] },
+  { cat: "gym-wear", sub: "mens-gym-wear", label: "Men's Gym Wear", type: "gym", price: 2750, tags: ["Gym Wear", "Strength Club", "Men", "Custom print"], names: ["Men's Weightlifting T-Shirt", "Men's Gym Tee"], blurbs: ["Men's gym tee printed for lifting or running.", "Men's gym tee in sweat-wicking cotton."] },
+  { cat: "gym-wear", sub: "womens-gym-wear", label: "Women's Gym Wear", type: "gym", price: 2850, tags: ["Gym Wear", "Women", "Custom print"], names: ["Women's Training Top", "Women's Studio Tee"], blurbs: ["Women's training top in a breathable fit.", "Women's studio tee, printed for your class or club."] },
+  { cat: "gym-wear", sub: "custom-gym-wear", label: "Custom Gym Wear", type: "gym", price: 3150, tags: ["Gym Wear", "Custom Design", "Custom print"], names: ["Custom Gym Wear", "Your Design Gym Tee", "Team Gym Kit"], blurbs: ["Gym wear printed with your own artwork and colours.", "Your design on a sweat-wicking gym tee.", "Team gym kit printed in your club colours."] },
   // Bags & Accessories
-  { cat: "bags-accessories", sub: "tote-bags", label: "Tote Bags", price: 1250, names: ["Tote Bag", "Canvas Tote Bag", "Graphic Tote Bag"] },
-  { cat: "bags-accessories", sub: "caps", label: "Caps", price: 1450, names: ["Embroidered Cap", "Studio Cap", "Structured Cap"] },
-  { cat: "bags-accessories", sub: "stickers", label: "Stickers", price: 350, names: ["Custom Sticker Pack", "Sticker Sheet", "Logo Stickers"] },
-  { cat: "bags-accessories", sub: "mugs", label: "Mugs", price: 950, names: ["Custom Mug", "Personalised Mug"] },
-  { cat: "bags-accessories", sub: "custom-accessories", label: "Custom Accessories", price: 1250, names: ["Custom Accessories", "Your Logo Accessories"] },
+  { cat: "bags-accessories", sub: "tote-bags", label: "Tote Bags", type: "tote", price: 1250, tags: ["Tote Bag", "Accessories", "Custom print"], names: ["Canvas Tote Bag", "Custom Printed Tote Bag", "Market Print Tote"], featured: [0], blurbs: ["Heavy cotton tote printed with your artwork or logo.", "Canvas tote for markets, books and daily carry.", "Printed market tote, made to order in Sialkot."] },
+  { cat: "bags-accessories", sub: "caps", label: "Caps", type: "caps", price: 1450, tags: ["Cap", "Accessories", "Embroidered", "Custom print"], names: ["Embroidered Cap", "Structured Cap", "Curve Brim Cap"], blurbs: ["Cap with your logo embroidered on the front.", "Structured cap in a classic six-panel shape.", "Curve brim cap, printed or embroidered to order."] },
+  { cat: "bags-accessories", sub: "stickers", label: "Stickers", type: "stickers", price: 350, tags: ["Sticker", "Accessories", "Custom print"], names: ["Custom Sticker Pack", "Logo Sticker Sheet", "Die Cut Sticker Pack"], new: [0], blurbs: ["A pack of vinyl stickers cut to your artwork.", "Sticker sheet with your logo or designs.", "Die cut stickers, weatherproof and ready to share."] },
+  { cat: "bags-accessories", sub: "mugs", label: "Mugs", type: "mugs", price: 950, tags: ["Mug", "Accessories", "Custom print"], names: ["Custom Mug", "Personalised Photo Mug", "Ceramic Print Mug"], blurbs: ["Ceramic mug printed with your photo or artwork.", "Personalised mug with a name, date or message.", "Mug with full-colour print that survives the dishwasher."] },
+  { cat: "bags-accessories", sub: "custom-accessories", label: "Custom Accessories", type: "custom", price: 1250, tags: ["Accessories", "Custom Design", "Custom print"], names: ["Custom Accessories", "Your Logo Merch", "Personalised Accessory"], blurbs: ["A small merch piece made from your logo or idea.", "Your logo printed onto the accessory you choose.", "A personalised accessory, made to order in Sialkot."] },
   // Home & Gifts
-  { cat: "home-gifts", sub: "posters-prints", label: "Posters & Prints", price: 950, names: ["Poster & Print", "Art Print", "Custom Art Print"] },
-  { cat: "home-gifts", sub: "mugs", label: "Mugs", price: 950, names: ["Personalised Mug", "Custom Photo Mug", "Gift Mug"] },
-  { cat: "home-gifts", sub: "gift-boxes", label: "Gift Boxes", price: 2650, names: ["Gift Box", "Custom Gift Box"] },
-  { cat: "home-gifts", sub: "custom-gifts", label: "Custom Gifts", price: 2450, names: ["Custom Gift", "Personalised Gift Set"] },
-  { cat: "home-gifts", sub: "pakistani-culture-gifts", label: "Pakistani Culture Gifts", price: 1750, names: ["Pakistani Culture Gift", "Heritage Gift"] },
-  { cat: "home-gifts", sub: "personalized-gifts", label: "Personalized Gifts", price: 2050, names: ["Personalized Gift", "Monogram Gift"] },
+  { cat: "home-gifts", sub: "posters-prints", label: "Posters & Prints", type: "posters", price: 950, tags: ["Poster", "Print", "Gift", "Custom print"], names: ["Custom Poster Print", "Art Print", "Poster & Print", "NAQSH Artwork Print"], featured: [0], new: [3], blurbs: ["A poster printed from your artwork or a NAQSH design.", "Art print on premium matte paper, made to order.", "Poster and print in the size and finish you want.", "A NAQSH artwork, printed and ready to frame."] },
+  { cat: "home-gifts", sub: "mugs", label: "Mugs", type: "mugs", price: 950, tags: ["Mug", "Gift", "Custom print"], names: ["Personalised Mug", "Custom Photo Mug", "Gift Mug"], featured: [0], new: [1], blurbs: ["A mug with a name, photo or message — the usual gift choice.", "Custom photo mug printed in full colour.", "Gift mug wrapped and ready to give."] },
+  { cat: "home-gifts", sub: "gift-boxes", label: "Gift Boxes", type: "gift", price: 2650, tags: ["Gift Box", "Gift", "Custom print"], names: ["Personalised Gift Box", "Wrapped Gift Box"], blurbs: ["A gift box printed with a name or message, ready to give.", "Wrapped gift box, assembled to order in Sialkot."] },
+  { cat: "home-gifts", sub: "custom-gifts", label: "Custom Gifts", type: "gift", price: 2450, tags: ["Gift", "Custom Design", "Custom print"], names: ["Custom Gift Set", "Personalised Gift Set"], blurbs: ["A gift set built around your idea and message.", "Personalised gift set, wrapped and ready to send."] },
+  { cat: "home-gifts", sub: "pakistani-culture-gifts", label: "Pakistani Culture Gifts", type: "gift", price: 1750, tags: ["Gift", "Pakistani Culture", "Custom print"], names: ["Truck Art Gift Set", "Pakistani Culture Gift"], blurbs: ["A gift set with truck art prints and patterns.", "Pakistani culture gift, made to order in Sialkot."] },
+  { cat: "home-gifts", sub: "personalized-gifts", label: "Personalized Gifts", type: "gift", price: 2050, tags: ["Gift", "Personalised", "Custom print"], names: ["Monogram Gift", "Name Print Gift"], blurbs: ["A gift printed with a monogram or initials.", "Name print gift for weddings, anniversaries and birthdays."] },
   // Custom
-  { cat: "custom", sub: "custom-t-shirts", label: "Custom T-Shirts", price: 2900, names: ["Made to Order T-Shirt", "Custom Crew T-Shirt"] },
-  { cat: "custom", sub: "custom-hoodies", label: "Custom Hoodies", price: 5150, names: ["Made to Order Hoodie", "Custom Pullover Hoodie"] },
-  { cat: "custom", sub: "custom-gym-wear", label: "Custom Gym Wear", price: 3150, names: ["Team Gym Wear", "Custom Training Kit"] },
-  { cat: "custom", sub: "custom-gifts", label: "Custom Gifts", price: 2450, names: ["Custom Gift", "Personalised Gift Box"] },
-  { cat: "custom", sub: "custom-couple-products", label: "Custom Couple Products", price: 4900, names: ["Custom Couple T-Shirts", "Couple Hoodies Set"] },
-  { cat: "custom", sub: "bulk-event-merchandise", label: "Bulk & Event Merchandise", price: 1650, names: ["Bulk Event T-Shirts", "Team Merchandise", "Event Hoodies"] },
-  { cat: "custom", sub: "custom-orders", label: "Custom Orders", price: 2900, names: ["Custom Printed Piece", "Made to Order Item"] },
+  { cat: "custom", sub: "custom-t-shirts", label: "Custom T-Shirts", type: "tees", price: 2900, tags: ["Custom Design", "T-Shirt", "Made to order"], names: ["Made to Order T-Shirt", "Custom Crew T-Shirt", "Bulk Custom T-Shirt"], featured: [0], blurbs: ["A t-shirt made fully to your artwork and specifications.", "Custom crew t-shirt, printed to order in Sialkot.", "Bulk custom t-shirts for teams, events and businesses."] },
+  { cat: "custom", sub: "custom-hoodies", label: "Custom Hoodies", type: "hoodies", price: 5150, tags: ["Custom Design", "Hoodie", "Made to order"], names: ["Made to Order Hoodie", "Custom Pullover Hoodie"], blurbs: ["A hoodie made to your artwork, colours and fit.", "Custom pullover hoodie, printed to order in Sialkot."] },
+  { cat: "custom", sub: "custom-gym-wear", label: "Custom Gym Wear", type: "gym", price: 3150, tags: ["Custom Design", "Gym Wear", "Made to order"], names: ["Team Gym Wear", "Custom Training Kit"], blurbs: ["Gym wear made for a full team or club.", "Custom training kit in your colours and logo."] },
+  { cat: "custom", sub: "custom-gifts", label: "Custom Gifts", type: "gift", price: 2450, tags: ["Custom Design", "Gift", "Made to order"], names: ["Custom Gift", "Made to Order Gift Set"], blurbs: ["A gift made around your idea, name or photo.", "Made to order gift set, assembled and wrapped for you."] },
+  { cat: "custom", sub: "custom-couple-products", label: "Custom Couple Products", type: "tees", price: 4900, tags: ["Custom Design", "Couple", "Made to order"], names: ["Custom Couple T-Shirts", "Couple Name T-Shirts", "Couple Print Set"], new: [0], blurbs: ["A pair of t-shirts printed with both names.", "Couple tees with matching or mirrored prints.", "Couple print set, made to order in Sialkot."] },
+  { cat: "custom", sub: "bulk-event-merchandise", label: "Bulk & Event Merchandise", type: "custom", price: 1650, tags: ["Custom Design", "Bulk", "Events", "Made to order"], names: ["Bulk Event T-Shirts", "Team Merchandise", "Event Hoodies", "College Fest Tee"], blurbs: ["T-shirts printed in bulk for an event or drive.", "Team merchandise in your colours and logo.", "Event hoodies for festivals, fests and launches.", "College fest tee, printed in bulk for your society."] },
+  { cat: "custom", sub: "custom-orders", label: "Custom Orders", type: "custom", price: 2900, tags: ["Custom Design", "Made to order"], names: ["Custom Printed Piece", "Made to Order Item", "Any Idea, Printed"], blurbs: ["Almost any idea can be printed — share it and we will plan the piece.", "A made to order item built around your reference.", "Any idea, printed: send us the artwork and quantity."] },
 ];
 
-const catToPool: Record<string, (typeof pool)[keyof typeof pool]> = {
-  men: pool.tees,
-  women: pool.tees,
-  kids: pool.tees,
-  "t-shirts": pool.tees,
-  hoodies: pool.hoodies,
-  sweatshirts: pool.sweatshirts,
-  "gym-wear": pool.gym,
-  "bags-accessories": pool.bags,
-  "home-gifts": pool.gifts,
-  custom: pool.custom,
-};
-
-export const demoProducts = seeds.flatMap((seed, seedIndex) =>
-  seed.names.map((name, index) => {
-    const price = seed.price + index * 150;
-    const imageSet = catToPool[seed.cat];
-    const image = imageSet[seedIndex % imageSet.length];
+export const demoProducts = seeds.flatMap((seed) => {
+  const meta = typeMeta[seed.type];
+  return seed.names.map((name, index) => {
+    const pool = meta.pool;
+    const images = pool.length > 1 ? [pool[index % pool.length], pool[(index + 1) % pool.length]] : [pool[0]];
     return {
       id: `demo-${seed.cat}-${seed.sub}-${index + 1}`,
       name,
       slug: slugify(name),
-      description: `${name} — ${seed.label} made for your artwork, text or idea. A NAQSH custom printed piece, printed to order in Sialkot, Pakistan.`,
-      fullDescription: `${name} is a flexible starting point for your idea. Choose a colour, size and print placement, then message NAQSH on WhatsApp to make it personal. Made with DTF and sublimation printing where the product calls for it.`,
-      price,
+      description: seed.blurbs[index % seed.blurbs.length],
+      fullDescription: meta.full,
+      price: seed.price + index * 150,
       category: seed.cat,
       categoryLabel: seed.label,
       subcategory: seed.sub,
-      image,
-      images: [image],
-      isFeatured: seedIndex % 4 === 0,
-      isNew: index === 0 && seedIndex % 3 === 0,
-      colors: ["Black", "Warm White", "Sage"],
-      sizes: ["S", "M", "L", "XL"],
+      image: images[0],
+      images,
+      isFeatured: seed.featured?.includes(index) ?? false,
+      isNew: seed.new?.includes(index) ?? false,
+      colors: meta.colors,
+      sizes: meta.sizes,
       customizable: true,
-      tags: [seed.label, "Custom print"],
+      tags: seed.tags,
     };
-  })
-);
+  });
+});
 
 export const featuredDemoProducts = demoProducts.filter((product) => product.isFeatured).slice(0, 8);
 export const newDemoProducts = demoProducts.filter((product) => product.isNew).slice(0, 6);
