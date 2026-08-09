@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { siteSettings } from "@/lib/settings";
-import { whatsappLink } from "@/lib/utils";
-export async function SiteHeader() { const { brand, whatsapp } = await siteSettings(); return <header className="border-b border-line bg-paper/95"><div className="wrap flex min-h-18 items-center justify-between gap-4 py-4"><Link href="/" className="flex items-center gap-3 text-xl font-bold tracking-[.18em]">{brand.logoUrl ? <img src={brand.logoUrl} alt={brand.siteName} className="h-8 w-auto" /> : brand.siteName}</Link><nav aria-label="Main navigation" className="hidden gap-6 text-sm md:flex"><Link href="/">Home</Link><Link href="/categories">Categories</Link><Link href="/shop">Shop</Link><Link href="/collections">Collections</Link><Link href="/custom-design">Create your design</Link><Link href="/about">About Us</Link></nav><a className="button button-clay" href={whatsappLink(whatsapp.phone || "923000000000", whatsapp.defaultMessage)} target="_blank" rel="noreferrer">WhatsApp</a></div></header>; }
+import { HeaderNav } from "@/components/header-nav";
+export async function SiteHeader() { const { brand, whatsapp } = await siteSettings(); return <HeaderNav brandName={brand.siteName} logoUrl={brand.logoUrl} whatsappNumber={whatsapp.phone} whatsappMessage={whatsapp.defaultMessage} />; }

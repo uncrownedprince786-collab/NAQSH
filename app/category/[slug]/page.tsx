@@ -2,9 +2,69 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/product-card";
-import { prisma } from "@/lib/db";
-import { demoProducts } from "@/lib/demo";
+import { liveCategories, liveCategoryProducts } from "@/lib/catalog";
+import { taxonomyBySlug } from "@/lib/taxonomy";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const intro = (name: string, description?: string | null) => description || `Explore ${name} made for your artwork, text, logo or original idea. Choose a ready-made design or create something personal with NAQSH.`;
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const slug = (await params).slug; try { const category = await prisma.category.findFirst({ where: { slug, isVisible: true }, include: { parent: true } }); if (category) { const title = `${category.name} | Custom Apparel`; const description = intro(category.name, category.description); return { title, description, alternates: { canonical: `/category/${category.slug}` }, openGraph: { title, description } }; } } catch { /* metadata fallback */ } return { title: "Custom Apparel", description: "Explore custom T-shirts, hoodies, sportswear and merchandise from NAQSH." }; }
-export default async function Category({ params }: { params: Promise<{ slug: string }> }) { const { slug } = await params; try { const category = await prisma.category.findFirst({ where: { slug, isVisible: true }, include: { parent: true, children: { where: { isVisible: true }, orderBy: { position: "asc" }, include: { products: { where: { isActive: true }, include: { images: { include: { media: true }, orderBy: { position: "asc" } } } } } }, products: { where: { isActive: true }, include: { images: { include: { media: true }, orderBy: { position: "asc" } } } } } }); if (category) { const products = [...category.products, ...category.children.flatMap((child) => child.products)], description = intro(category.name, category.description), crumbs = [{ name: "Home", path: "/" }, { name: "Categories", path: "/categories" }, ...(category.parent ? [{ name: category.parent.name, path: `/category/${category.parent.slug}` }] : []), { name: category.name, path: `/category/${category.slug}` }], breadcrumbLd = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: crumbs.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: `${siteUrl}${item.path}` })) }; return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}/><section className="wrap py-4 text-sm text-neutral-600" aria-label="Breadcrumb">{crumbs.slice(0, -1).map((item) => <span key={item.path}><Link href={item.path}>{item.name}</Link><span className="mx-2">/</span></span>)}<span>{category.name}</span></section><section className="wrap py-8"><p className="eyebrow">Custom apparel</p><h1 className="mt-2 text-4xl">{category.name}</h1><p className="mt-3 max-w-2xl text-neutral-600">{description}</p>{category.children.length > 0 && <nav className="mt-7 flex flex-wrap gap-2" aria-label={`${category.name} subcategories`}>{category.children.map((child) => <Link key={child.id} href={`/category/${child.slug}`} className="button !px-4 !py-2 text-sm">{child.name}</Link>)}</nav>}<div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{products.map((product) => <ProductCard key={product.id} product={{ name: product.name, slug: product.slug, price: Number(product.price), image: product.images[0]?.media.url || demoProducts[0].image }} />)}</div>{category.parent && <p className="mt-10 text-sm text-neutral-600">Looking for more? <Link className="underline" href={`/category/${category.parent.slug}`}>Browse all {category.parent.name}</Link>.</p>}</section></>; } } catch { /* local fallback */ } const products = demoProducts.filter((product) => product.category === slug); if (!products.length) return notFound(); return <section className="wrap py-12"><p className="eyebrow">Custom apparel</p><h1 className="mt-2 text-4xl">Custom T-Shirts</h1><p className="mt-3 max-w-2xl text-neutral-600">Create a custom T-shirt with your own artwork, text or idea, or choose a design that feels like you.</p><div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">{products.map((product) => <ProductCard key={product.id} product={product} />)}</div></section>; }
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const cat = taxonomyBySlug.get(slug);
+  if (!cat) return { title: "Category | NAQSH" };
+  const title = cat.seoTitle || `${cat.name} | Custom Apparel`;
+  const description = cat.seoDescription || cat.description;
+  return { title, description, alternates: { canonical: `/category/${slug}` }, openGraph: { title, description, images: [cat.image] } };
+}
+
+export default async function Category({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const def = taxonomyBySlug.get(slug);
+  if (!def) return notFound();
+  const [categories, products] = await Promise.all([liveCategories(), liveCategoryProducts(slug)]);
+  const info = categories.find((category) => category.slug === slug);
+  if (!info) return notFound();
+  const crumbs = [{ name: "Home", path: "/" }, { name: "Categories", path: "/categories" }, { name: info.name, path: `/category/${slug}` }];
+  const breadcrumbLd = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: crumbs.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: `${siteUrl}${item.path}` })) };
+  const others = categories.filter((category) => category.slug !== slug);
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <section className="wrap py-4 text-sm text-neutral-600" aria-label="Breadcrumb">
+        {crumbs.slice(0, -1).map((item) => <span key={item.path}><Link href={item.path}>{item.name}</Link><span className="mx-2">/</span></span>)}
+        <span>{info.name}</span>
+      </section>
+      <section className="wrap py-8">
+        <p className="eyebrow">{info.productCount} pieces</p>
+        <h1 className="mt-2 text-4xl">{info.name}</h1>
+        <p className="mt-3 max-w-2xl text-neutral-600">{info.description}</p>
+        <p className="mt-5 max-w-2xl text-sm leading-6 text-neutral-500">Every piece in {info.name.toLowerCase()} can be personalised. Choose a ready-made design or bring your own artwork, text, logo or idea and we will print it to order in Sialkot.</p>
+      </section>
+      {info.subcategories.length > 0 && (
+        <nav className="wrap mb-2 flex flex-wrap gap-2" aria-label={`${info.name} subcategories`}>
+          {info.subcategories.filter((sub) => sub.productCount > 0).map((sub) => (
+            <Link key={sub.slug} href={`/category/${slug}/${sub.slug}`} className="button !px-4 !py-2 text-sm">{sub.name} <span className="ml-1 opacity-60">{sub.productCount}</span></Link>
+          ))}
+        </nav>
+      )}
+      <section className="wrap py-10">
+        {products.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {products.map((product) => <ProductCard key={product.id} product={product} />)}
+          </div>
+        ) : (
+          <div className="border border-line bg-white/40 p-10 text-center">
+            <h2 className="text-xl">This category is being restocked.</h2>
+            <p className="mt-2 text-sm text-neutral-600">New pieces are on the way. In the meantime, start a custom order with your own idea.</p>
+            <Link href="/custom-design" className="button mt-6">Create Your Design</Link>
+          </div>
+        )}
+      </section>
+      <section className="wrap border-t border-line py-12">
+        <p className="eyebrow">Keep exploring</p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {others.map((category) => <Link key={category.slug} href={`/category/${category.slug}`} className="text-sm underline underline-offset-4">{category.name}</Link>)}
+        </div>
+      </section>
+    </>
+  );
+}
