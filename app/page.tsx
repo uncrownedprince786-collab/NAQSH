@@ -5,6 +5,7 @@ import { liveCategories, liveProducts } from "@/lib/catalog";
 import { homeContent } from "@/lib/site-content";
 import { ProductCard } from "@/components/product-card";
 import { ProductImage } from "@/components/product-image";
+import { DesignShowcase } from "@/components/design-showcase";
 export const metadata: Metadata = { title: "Custom T-Shirts & Custom Apparel", description: "Create custom T-shirts, hoodies, sportswear and merchandise with your own designs or explore ready-made pieces from NAQSH, the Sialkot print studio.", alternates: { canonical: "/" } };
 
 function ProductSection({ eyebrow, title, products, viewAllHref, viewAllLabel, id }: { eyebrow: string; title: string; products: any[]; viewAllHref: string; viewAllLabel: string; id?: string }) {
@@ -78,6 +79,8 @@ export default async function Home() {
         <Link className="button mt-7 sm:hidden" href="/categories">All categories</Link>
       </div>
     </section>
+
+    <DesignShowcase viewAllHref="/category/home-gifts/posters-prints" viewAllLabel="View all Posters & Prints" />
 
     <ProductSection eyebrow="Featured pieces" title="Made to become yours." products={featured} viewAllHref="/shop" viewAllLabel="Shop All" />
 
